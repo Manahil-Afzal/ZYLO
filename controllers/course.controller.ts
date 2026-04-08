@@ -2,13 +2,15 @@ import { NextFunction, Response, Request } from "express";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import cloudinary from "cloudinary";
-import { createCourse } from "../services/course.service";
+import { createCourse, getAllCoursesService } from "../services/course.service";
 import CourseModel from "../models/course.model";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
 import sendMail from "../utils/sendMail";
 import path from "node:path";
 import ejs from "ejs";
+import NotificationModel from "../models/notificationModel";
+// import { getAllUsersService } from "../services/user.service";
 
 
 // upload course 
@@ -170,7 +172,7 @@ export const getSingleCourse = CatchAsyncError(
           const course = await CourseModel.findById(req.params.id).select(
          "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links");
 
-          await redis.set(courseId, JSON.stringify(course));
+          await redis.set(courseId, JSON.stringify(course), 'EX', 604800);
 
           res.status(200).json({
             success: true,
@@ -219,7 +221,7 @@ export const getAllCourses = CatchAsyncError(
 export const getCourseByUser = CatchAsyncError(async(req:Request, res:Response, next:NextFunction)=>{
     try {
         const userCourseList = req.user?.courses;
-        const courseId = req.params.id;
+        const courseId = req.params.id; 
 
         const courseExists = userCourseList?.find(
             (course:any) => course._id.toString() === courseId
@@ -273,6 +275,13 @@ export const addQuestion = CatchAsyncError(async(req:Request, res:Response, next
 
          // add this question to our course content
          courseContent.questions.push(newQuestion);
+
+          await NotificationModel.create({
+            user: req.user?._id,
+            title: "New Question Received",
+            message: `you have a new question from ${courseContent.title}`,
+        });
+
          
 
          // save the updated courses
@@ -280,7 +289,7 @@ export const addQuestion = CatchAsyncError(async(req:Request, res:Response, next
 
          res.status(200).json({
             success: true,
-         })
+         });
 
     } catch (error:any) {
         return next(new ErrorHandler(error.message, 500));
@@ -332,6 +341,11 @@ export const addAnswer = CatchAsyncError(async(req:Request, res:Response, next:N
 
         if(req.user?._id === question.user._id){
             // create a notification 
+            await NotificationModel.create({
+                user: req.user?._id,
+                title: "New Question Reply Received",
+                message: `You have a new question reply in ${courseContent.title}`
+            })
         } else{
             const data = {
                 name: question.user.name,
@@ -370,7 +384,6 @@ interface IAddReviewData {
 }
 
 export const addReview = CatchAsyncError(async(req:Request, res:Response, next: NextFunction)=>{
-    console.log("BODY RECEIVED:", req.body);
     try {
         const userCourseList = req.user?.courses;
 
@@ -407,10 +420,15 @@ export const addReview = CatchAsyncError(async(req:Request, res:Response, next: 
 
         await course?.save();
 
-        const notification = {
-            title: "New Review Received",
-            message: `${req.user?.name} has given a review in ${course?.name}`,
-        }
+        // const notification = {
+        //     title: "New Review Received",
+        //     message: `${req.user?.name} has given a review in ${course?.name}`,
+        // }
+        await NotificationModel.create({
+    user: req.user?._id,
+    title: "New Review Received",
+    message: `${req.user?.name} has given a review in ${course?.name}`,
+});
 
         // create Notification
         res.status(200).json({
@@ -466,4 +484,38 @@ export const addReplyToReview = CatchAsyncError(async(req:Request, res:Response,
      } catch (error:any) {
         return next(new ErrorHandler(error.message, 500));
      }
+});
+
+// get all courses ---only for admin
+export const getAllUsers = CatchAsyncError(
+    async (req:Request, res: Response, next:NextFunction) => {
+    try {
+       getAllCoursesService(res);
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message, 400));
+    }
+});
+
+
+// Delete user --only for admin
+export const deleteCourse= CatchAsyncError(
+    async(req:Request, res:Response, next:NextFunction) => {
+    try {
+        const {id} = req.params;
+        const course = await CourseModel.findById(id);
+
+        if(!course){
+            return next (new ErrorHandler("User not Found", 404));
+        }
+        await course.deleteOne();
+
+        await redis.del(id);
+
+        res.status(200).json({
+            success: true,
+            message: "Course deleted successfully",
+        });
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message, 400));
+    }
 });
