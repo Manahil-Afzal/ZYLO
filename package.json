@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "server",
   "version": "1.0.0",
   "description": "",
@@ -36,5 +37,17 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
     "@types/nodemailer": "^7.0.11"
+=======
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^9.0.0",
+    "@mui/material": "^9.0.0",
+    "@reduxjs/toolkit": "^2.11.2",
+    "formik": "^2.4.9",
+    "react-hot-toast": "^2.6.0",
+    "react-redux": "^9.2.0",
+    "yup": "^1.7.1"
+>>>>>>> 3227e220 (ZyLO LMs updated)
   }
 }

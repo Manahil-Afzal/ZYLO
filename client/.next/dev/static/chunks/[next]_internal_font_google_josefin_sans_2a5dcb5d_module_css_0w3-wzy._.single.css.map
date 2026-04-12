@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[next]/internal/font/google/josefin_sans_2a5dcb5d.module.css"],"sourcesContent":["@font-face {\n    font-family: 'Josefin Sans Fallback';\n    src: local(\"Arial\");\n    ascent-override: 73.32%;\ndescent-override: 24.44%;\nline-gap-override: 0.00%;\nsize-adjust: 102.29%;\n\n}\n.className {\n    font-family: 'Josefin Sans', 'Josefin Sans Fallback';\n    font-style: normal;\n\n}\n.variable {\n    --font-Josefin: 'Josefin Sans', 'Josefin Sans Fallback';\n}\n"],"names":[],"mappings":"AAAA;;;;;;;;;AASA;;;;;AAKA","ignoreList":[0]}}]
+}

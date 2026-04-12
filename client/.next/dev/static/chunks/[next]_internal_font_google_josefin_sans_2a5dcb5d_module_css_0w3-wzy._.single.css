@@ -1,0 +1,20 @@
+/* [next]/internal/font/google/josefin_sans_2a5dcb5d.module.css [app-client] (css) */
+@font-face {
+  font-family: Josefin Sans Fallback;
+  src: local(Arial);
+  ascent-override: 73.32%;
+  descent-override: 24.44%;
+  line-gap-override: 0.0%;
+  size-adjust: 102.29%;
+}
+
+.josefin_sans_2a5dcb5d-module__TPbhVa__className {
+  font-family: Josefin Sans, Josefin Sans Fallback;
+  font-style: normal;
+}
+
+.josefin_sans_2a5dcb5d-module__TPbhVa__variable {
+  --font-Josefin: "Josefin Sans", "Josefin Sans Fallback";
+}
+
+/*# sourceMappingURL=%5Bnext%5D_internal_font_google_josefin_sans_2a5dcb5d_module_css_0w3-wzy._.single.css.map*/
