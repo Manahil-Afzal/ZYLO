@@ -1,21 +1,26 @@
 import dotenv from "dotenv";
+import path from "path";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import cloudinary from "cloudinary";
+import {rateLimit} from 'express-rate-limit';
 import { ErrorMiddleware } from "./middleware/error";
-import userRouter from "./routes/user.route";
-import courseRouter from "./routes/course.route";
-import orderRouter from "./routes/order.route";
-import notificationRouter from "./routes/notification.route";
-import analyticsRouter from "./routes/analytics.route";
-import layoutRouter from "./routes/layout.route";
+import * as userRouter from "./routes/user.route";
+import * as courseRouter from "./routes/course.route";
+import * as orderRouter from "./routes/order.route";
+import * as notificationRouter from "./routes/notification.route";
+import * as analyticsRouter from "./routes/analytics.route";
+import * as layoutRouter from "./routes/layout.route";
 
-dotenv.config();
+
+dotenv.config({
+    path: path.resolve(__dirname, "../.env"),
+    override: true,
+});
 
 
 export const app = express();
-
 
  
 // body parser
@@ -27,12 +32,33 @@ app.use(cookieParser());
 
 //  cors => cross origin resource sharing               
 app.use(cors({
-    origin:  process.env.ORIGIN,
+    origin:  ['http://localhost:3000'],
+    credentials: true,
 })); 
 
-//routes
-app.use("/api/v1", userRouter, courseRouter, orderRouter, notificationRouter, analyticsRouter, layoutRouter);
+//api request limit
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+})
 
+console.log('Router types:');
+console.log('userRouter.default:', typeof userRouter.default);
+console.log('courseRouter.default:', typeof courseRouter.default);
+console.log('orderRouter.default:', typeof orderRouter.default);
+console.log('notificationRouter.default:', typeof notificationRouter.default);
+console.log('analyticsRouter.default:', typeof analyticsRouter.default);
+console.log('layoutRouter.default:', typeof layoutRouter.default);
+
+// routes
+app.use("/api/v1/user", userRouter.default);
+app.use("/api/v1/courses", courseRouter.default);
+app.use("/api/v1/orders", orderRouter.default);
+app.use("/api/v1/notifications", notificationRouter.default);
+app.use("/api/v1/analytics", analyticsRouter.default);
+app.use("/api/v1/layout", layoutRouter.default);
 
 // Testing Api
 app.get("/test", (req:Request, res:Response, next:NextFunction)=>{
@@ -49,4 +75,8 @@ app.use((req:Request, res:Response, next:NextFunction) => {
     next(err);
 });                 
 
+// middleware calls
+app.use(limiter);
 app.use(ErrorMiddleware);
+
+export default app;

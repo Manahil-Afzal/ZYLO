@@ -1,0 +1,104 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.app = void 0;
+const dotenv_1 = __importDefault(require("dotenv"));
+const path_1 = __importDefault(require("path"));
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const express_rate_limit_1 = require("express-rate-limit");
+const error_1 = require("./middleware/error");
+const userRouter = __importStar(require("./routes/user.route"));
+const courseRouter = __importStar(require("./routes/course.route"));
+const orderRouter = __importStar(require("./routes/order.route"));
+const notificationRouter = __importStar(require("./routes/notification.route"));
+const analyticsRouter = __importStar(require("./routes/analytics.route"));
+const layoutRouter = __importStar(require("./routes/layout.route"));
+dotenv_1.default.config({
+    path: path_1.default.resolve(__dirname, "../.env"),
+    override: true,
+});
+exports.app = (0, express_1.default)();
+// body parser
+exports.app.use(express_1.default.json({ limit: "50mb" }));
+exports.app.use(express_1.default.urlencoded({ extended: true }));
+// cookie parser
+exports.app.use((0, cookie_parser_1.default)());
+//  cors => cross origin resource sharing               
+exports.app.use((0, cors_1.default)({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+}));
+//api request limit
+const limiter = (0, express_rate_limit_1.rateLimit)({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+});
+console.log('Router types:');
+console.log('userRouter.default:', typeof userRouter.default);
+console.log('courseRouter.default:', typeof courseRouter.default);
+console.log('orderRouter.default:', typeof orderRouter.default);
+console.log('notificationRouter.default:', typeof notificationRouter.default);
+console.log('analyticsRouter.default:', typeof analyticsRouter.default);
+console.log('layoutRouter.default:', typeof layoutRouter.default);
+// routes
+exports.app.use("/api/v1/user", userRouter.default);
+exports.app.use("/api/v1/courses", courseRouter.default);
+exports.app.use("/api/v1/orders", orderRouter.default);
+exports.app.use("/api/v1/notifications", notificationRouter.default);
+exports.app.use("/api/v1/analytics", analyticsRouter.default);
+exports.app.use("/api/v1/layout", layoutRouter.default);
+// Testing Api
+exports.app.get("/test", (req, res, next) => {
+    res.status(200).json({
+        success: true,
+        message: "API is working",
+    });
+});
+//unknown route
+exports.app.use((req, res, next) => {
+    const err = new Error(`Route ${req.originalUrl} not found`);
+    err.statusCode = 404;
+    next(err);
+});
+// middleware calls
+exports.app.use(limiter);
+exports.app.use(error_1.ErrorMiddleware);

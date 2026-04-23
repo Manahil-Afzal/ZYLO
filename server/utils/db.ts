@@ -1,17 +1,24 @@
 import mongoose from 'mongoose';
-require('dotenv').config();
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({
+    path: path.resolve(__dirname, '../.env'),
+    override: true,
+});
 
 const dbUrl:string = process.env.MONGO_URI || '';
 
 const connectDB = async () => {
-    try {
-        await mongoose.connect(dbUrl).then((data:any) => {
-            console.log(`Database connected with ${data.connection.host}`);
-        })
-    } catch (error:any) {
-        console.log(error.message);
-        setTimeout(connectDB, 5000);
+    if (!dbUrl) {
+        throw new Error("MONGO_URI is missing in environment variables");
     }
+
+    const connection = await mongoose.connect(dbUrl, {
+        serverSelectionTimeoutMS: 5000,
+    });
+
+    console.log(`Database connected with ${connection.connection.host}`);
 }
 
 export default connectDB;

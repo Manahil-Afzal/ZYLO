@@ -22,6 +22,7 @@ interface Layout extends Document{
         image: BannerImage;
         title: string;
         subtitle: string;
+        tagline: string;
     };
 }
 
@@ -42,12 +43,16 @@ const BannerImageSchema = new Schema<BannerImage> ({
 
 const layoutSchema= new Schema<Layout>({
     type: {type:String},
-    faq: {faqSchema},
+    faq: {
+        type: [faqSchema],
+        default: [],
+    },
     categories: [categorySchema],
     banner:{
         image: BannerImageSchema,
         title: {type:String},
         subtitle: {type: String},
+        tagline: {type: String},
     },
 });
 

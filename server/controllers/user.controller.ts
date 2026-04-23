@@ -1,4 +1,3 @@
-require('dotenv').config();
 import { Request,Response,NextFunction } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import type { JwtPayload, SignOptions } from "jsonwebtoken";
@@ -174,7 +173,7 @@ export const logoutUser= CatchAsyncError(async(req:Request, res:Response, next:N
         res.cookie("access_token", "", {maxAge:1});
          res.cookie("refresh_token", "", {maxAge:1});
            const userId = req.user?._id || '';
-         redis.del(userId);
+        redis.del(String(userId));
 
          res.status(200).json({
             success: true,
@@ -189,7 +188,14 @@ export const logoutUser= CatchAsyncError(async(req:Request, res:Response, next:N
 // update access token
 export const updateAccessToken = CatchAsyncError(async(req:Request,res:Response,next:NextFunction)=>{
     try {
-        const refresh_token = req.cookies.refresh_token as string;
+        const refresh_token =
+            (req.cookies?.refresh_token as string | undefined) ||
+            (req.body?.refresh_token as string | undefined);
+
+        if (!refresh_token) {
+            return next(new ErrorHandler("Refresh token is required", 400));
+        }
+
         const decoded = jwt.verify(refresh_token,
             process.env.REFRESH_TOKEN as string) as JwtPayload;
 
@@ -223,10 +229,14 @@ export const updateAccessToken = CatchAsyncError(async(req:Request,res:Response,
 
               await redis.set(user._id, JSON.stringify(user), "EX", 604800 ) // 7 days
 
-            res.status(200).json({
-                status:"success",
-                accessToken,
-            })
+           if (req.path === "/refresh" && req.method === "GET") {
+                return res.status(200).json({
+                    success: true,
+                    message: "Access token refreshed successfully",
+                });
+           }
+
+           next();
     } catch (error:any) {                    
         return next(new ErrorHandler(error.message, 400));
     }
@@ -237,7 +247,13 @@ export const  getUserInfo = CatchAsyncError(
     async(req:Request, res:Response, next:NextFunction)=>{
     try {
         const userId = req.user?._id;
-        getUserById(userId, res);
+        if (!userId) {
+          return res.status(401).json({
+            success: false,
+            message: 'User not authenticated',
+          });
+        }
+        getUserById(userId.toString(), res);
     } catch (error:any) {
         return next(new ErrorHandler(error.message, 400));
     }
@@ -256,7 +272,7 @@ export const socialAuth = CatchAsyncError(
         const {email, name, avatar} = req.body as ISocialAuthBody;
         const user = await userModel.findOne({email});
         if(!user){
-            const newUser= await userModel.create({email, name, avatar});
+            const newUser= await userModel.create({email, name, avatar: { public_id: '', url: avatar }});
             sendToken(newUser,200,res);
         }
         else{
@@ -275,24 +291,17 @@ interface IUpdateUserInfo{
 
 export const updateUserInfo = CatchAsyncError(async(req:Request, res:Response, next:NextFunction) =>{
     try {
-        const {name, email} = req.body as IUpdateUserInfo;
+        const {name} = req.body as IUpdateUserInfo;
         const userId = req.user?._id;
         const user = await userModel.findById(userId);
 
-        if(email && user){
-            const isEmailExist = await userModel.findOne({email});
-            if(isEmailExist){
-                return next(new ErrorHandler("Email already exist", 400));
-            }
-            user.email = email;
-        }
         if(name && user){
             user.name = name;
         }
 
         await user?.save();
 
-        await redis.set(userId, JSON.stringify(user));
+        await redis.set(String(userId), JSON.stringify(user));
 
         res.status(201).json({
             success: true,
@@ -334,7 +343,7 @@ export const updatePassword = CatchAsyncError(
 
         await user.save();
 
-        await redis.set(req.user?._id, JSON.stringify(user));
+        await redis.set(String(req.user!._id), JSON.stringify(user));
 
         res.status(201).json({
             success: true,
@@ -365,7 +374,7 @@ export const updateProfilePicture = CatchAsyncError(
               // if user have one avatar then call this if 
              if(user?.avatar?.public_id){
                 // first delete the old avatar
-            await cloudinary.v2.uploader.destroy(user?.avatar?.pubic_id);
+await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
 
          const myCloud =  await cloudinary.v2.uploader.upload(avatar,{
             folder: "avatars",
@@ -389,7 +398,7 @@ export const updateProfilePicture = CatchAsyncError(
 
          await user?.save();
 
-         await redis.set(userId, JSON.stringify(user));
+         await redis.set(String(userId), JSON.stringify(user));
 
          res.status(200).json({
             success: true,
@@ -423,6 +432,59 @@ export const updateUserRole = CatchAsyncError(async(req:Request, res:Response, n
     }
 });
 
+interface IAddMemberBody {
+    email: string;
+    role: "admin" | "user";
+}
+
+export const addTeamMember = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email, role } = req.body as IAddMemberBody;
+
+        if (!email) {
+            return next(new ErrorHandler("Email is required", 400));
+        }
+
+        if (!["admin", "user"].includes(role)) {
+            return next(new ErrorHandler("Role must be admin or user", 400));
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+        const existingUser = await userModel.findOne({ email: normalizedEmail });
+
+        if (existingUser) {
+            existingUser.role = role;
+            existingUser.isVerified = true;
+            await existingUser.save();
+
+            return res.status(200).json({
+                success: true,
+                message: "Member updated successfully",
+                user: existingUser,
+            });
+        }
+
+        const generatedPassword = Math.random().toString(36).slice(-10);
+        const generatedName = normalizedEmail.split("@")[0] || "New Member";
+
+        const newUser = await userModel.create({
+            name: generatedName,
+            email: normalizedEmail,
+            password: generatedPassword,
+            role,
+            isVerified: true,
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Member added successfully",
+            user: newUser,
+        });
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+    }
+});
+
 
 // delete user --only for admin
 export const deleteUser= CatchAsyncError(async(req:Request, res:Response, next:NextFunction) => {
@@ -435,7 +497,7 @@ export const deleteUser= CatchAsyncError(async(req:Request, res:Response, next:N
         }
         await user.deleteOne();
 
-        await redis.del(id);
+        await redis.del(String(id));
 
         res.status(200).json({
             success: true,
@@ -445,3 +507,5 @@ export const deleteUser= CatchAsyncError(async(req:Request, res:Response, next:N
         return next(new ErrorHandler(error.message, 400));
     }
 });
+
+

@@ -3,7 +3,7 @@ import mongoose, {Document, Model, Schema} from "mongoose";
 export interface IOrder extends Document{
     courseId: string;
     userId: string;
-    payment_info: object;
+    payment_info: Record<string, unknown>;
 }
 
 const orderSchema = new Schema<IOrder>({
@@ -16,8 +16,8 @@ const orderSchema = new Schema<IOrder>({
         required: true
      },
      payment_info:{
-        type: Object,
-        // required: true
+          type: Schema.Types.Mixed,
+          required: true,
      },
 },{timestamps: true});
 
