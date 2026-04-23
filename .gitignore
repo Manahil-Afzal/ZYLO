@@ -1,12 +1,5 @@
-# dependencies
 node_modules/
-
-# Next.js build
-client/.next/
-
-# env
+.next/
 .env
-.env.local
-
-# logs
-*.log
+dist/
+build/
