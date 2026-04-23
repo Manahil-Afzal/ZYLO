@@ -1,7 +1,10 @@
 'use client'
 import { styles } from '@/app/styles/style';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { VscWorkspaceTrusted } from 'react-icons/vsc';
+import { useActivationMutation } from '@/redux/features/auth/authApi';
+import { toast } from 'react-hot-toast';
+import { useSelector } from 'react-redux';
 
 type Props = {
     setRoute: (route: string) => void;
@@ -16,7 +19,27 @@ type VerifyNumber = {
 
 const Verification: FC<Props> = ({ setRoute }) => {
     const [invalidError, setInvalidError] = useState<boolean>(false);
+    const [activation, { isSuccess, error }] = useActivationMutation();
+    const token = useSelector((state: any) => state.auth.token);
     
+     useEffect(() => {
+         if(isSuccess){
+            toast.success("Account activated successfully");
+            setRoute("Login");
+         }
+         if(error){
+            if("data" in error){
+                const errorData = error as any;
+                toast.error(errorData.data.message);
+                setInvalidError(true);
+            } else {
+                console.log("An error occured:", error);
+            }
+         }
+    }, [isSuccess, error, setRoute]);
+
+
+
     // Fixed: Initializing refs properly
     const inputRefs = [
         useRef<HTMLInputElement>(null),
@@ -33,9 +56,16 @@ const Verification: FC<Props> = ({ setRoute }) => {
     });
 
     const verificationHandler = async () => {
-        // Logic for verification goes here
-        setInvalidError(true);
-    }
+        const verificationNumber = Object.values(verifyNumber).join("");
+        if(verificationNumber.length !== 4){
+            setInvalidError(true);
+            return;
+        }
+        await activation({
+            activation_token: token,
+            activation_code: verificationNumber,
+        });
+    };
 
     const handleInputChange = (index: number, value: string) => {
         setInvalidError(false);
@@ -61,9 +91,12 @@ const Verification: FC<Props> = ({ setRoute }) => {
             <br />
             <div className="w-full flex items-center justify-center mt-2">
                 {/* Updated to Purple Circle */}
-                <div className="w-[80px] h-[80px] rounded-full bg-purple-500 flex items-center justify-center text-white">
+                <div className="w-20 h-20 rounded-full bg-purple-500 flex items-center justify-center text-white">
                     <VscWorkspaceTrusted size={40} />
                 </div>
+            </div>
+            <div className="text-center mt-4 text-[14px] text-gray-600 dark:text-gray-300">
+                <p>Please enter the 4-digit code sent to your email.</p>
             </div>
             <br />
             <br />
@@ -72,10 +105,10 @@ const Verification: FC<Props> = ({ setRoute }) => {
                 <div className="flex items-center gap-3">
                     {Object.keys(verifyNumber).map((key, index) => (
                         <input
-                            type="text" // Changed to text so maxLength works
+                            type="text" 
                             key={key}
                             ref={inputRefs[index]}
-                            className={`w-[65px] h-[64px] bg-transparent border-[3px] rounded-[10px] flex items-center text-black dark:text-white justify-center text-[18px] font-Poppins outline-none text-center ${
+                            className={`w-[65px] h-16 bg-transparent border-[3px] rounded-[10px] flex items-center text-black dark:text-white justify-center text-[18px] font-Poppins outline-none text-center ${
                                 invalidError
                                     ? "shake border-purple-300"
                                     : "dark:border-white border-[#0000004a] focus:border-purple-700"
@@ -91,7 +124,7 @@ const Verification: FC<Props> = ({ setRoute }) => {
                 <div className="w-full flex justify-center mt-8">
                     {/* Updated Button to Purple */}
                     <button 
-                        className={`${styles.button} !bg-purple-500 hover:!bg-purple-800 transition-colors`} 
+                        className={`${styles.button} bg-purple-500! hover:bg-purple-800! transition-colors`} 
                         onClick={verificationHandler}
                     >
                         Verify OTP

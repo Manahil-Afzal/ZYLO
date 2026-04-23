@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import Link from 'next/link';
 import { navItemsData } from '../utils/NavItems';
 import { MdOutlineCancel } from 'react-icons/md';
-import { useTheme } from 'next-themes';
+import { useTheme } from '../utils/theme-provider';
 
 type Props = {
     activeItem: number;

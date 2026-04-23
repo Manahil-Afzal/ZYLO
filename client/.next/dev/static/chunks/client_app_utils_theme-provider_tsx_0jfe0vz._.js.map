@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///D:/Technical%20Projects/Zylo/client/app/utils/theme-provider.tsx"],"sourcesContent":["'use client'\r\nimport * as React from 'react'\r\nimport { ThemeProvider as NextThemesProvider } from 'next-themes';\r\n\r\nexport function ThemeProvider({children, ...props} : any){\r\n    return <NextThemesProvider {...props}> {children}</NextThemesProvider>\r\n}"],"names":["ThemeProvider","children","props"],"mappings":";;;;;AAEA;AAFA;;;AAIO,SAASA,cAAc,EAACC,QAAQ,EAAE,GAAGC,OAAY;IACpD,qBAAO,uMAAC,8KAAkB;QAAE,GAAGA,KAAK;;YAAE;YAAED;;;;;;;AAC5C;KAFgBD"}}]
-}
