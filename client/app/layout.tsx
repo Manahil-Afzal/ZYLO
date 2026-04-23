@@ -3,12 +3,9 @@ import React, { FC, useEffect } from "react";
 import "./globals.css";
 import { Poppins, Josefin_Sans } from "next/font/google";
 import { Providers } from "./Provider";
-import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
-import Loader from "./components/Loader/Loader";
-import socketIO from "socket.io-client";
 
-const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
-const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
+import UserLoader from "./components/UserLoader";
+import socketIO from "socket.io-client";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -41,16 +38,25 @@ export default function RootLayout({
 }
 
 const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isLoading } = useLoadUserQuery({});
-
   useEffect(() => {
-    socketId.on("connect", () => {
+    const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
+    if (!ENDPOINT) return;
+
+    const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
+
+    socket.on("connect", () => {
       console.log("Socket connected");
     });
+
     return () => {
-      socketId.off("connect");
+      socket.off("connect");
+      socket.disconnect();
     };
   }, []);
 
-  return <>{isLoading ? <Loader /> : <>{children}</>}</>;
+  return (
+    <UserLoader>
+      {children}
+    </UserLoader>
+  );
 };

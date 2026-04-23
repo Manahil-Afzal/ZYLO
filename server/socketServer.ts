@@ -1,19 +1,24 @@
- import {Server as SocketIOServer} from "socket.io";
- import http from 'http';
+import { Server as SocketIOServer } from "socket.io";
+import { Server } from "http";
 
- export const initSocketServer = (server: http.Server) => {
-    const io = new SocketIOServer(server);
+export const initSocketServer = (server: Server) => {
+    const io = new SocketIOServer(server, {
+        cors: {
+            origin: process.env.ORIGIN || "http://localhost:3000",
+            credentials: true,
+        },
+    });
 
     io.on("connection", (socket) => {
-        console.log('A user connected');
+        console.log("A user connected", socket.id);
 
-        // listen for 'notification' event from the frontend
         socket.on("notification", (data) => {
-            // Broadcast the notification data to all connected clients (admin dashboard)
             io.emit("newNotification", data);
         });
+
         socket.on("disconnect", () => {
-            console.log("A user disconnected");
-        })
-    })
- }
+            console.log("A user disconnected", socket.id);
+        });
+    });
+};
+
