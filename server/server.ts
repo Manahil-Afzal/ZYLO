@@ -20,11 +20,5 @@ cloudinary.config({
 
 initSocketServer(server);
 
-// DB connection ONLY ONCE
-(async () => {
-    await connectDB();
-
-    server.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-})();
+// connect DB ONCE per cold start
+connectDB();

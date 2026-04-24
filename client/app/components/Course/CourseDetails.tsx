@@ -196,7 +196,79 @@ const CourseDetails = (props: Props) => {
           <p className="text-[18px] mt-5 whitespace-pre-line text-black dark:text-white">{data.description}</p>
         </div>
 
-        {/* Reviews Section Omitted for brevity, kept exactly as your original logic */}
+        <div className="w-full mt-10">
+          <h1 className="text-[25px] font-Poppins font-semibold text-black dark:text-white">Reviews</h1>
+          <div className="mt-5 space-y-5">
+            {reviews.length === 0 ? (
+              <p className="text-[16px] text-black dark:text-white">No reviews available yet.</p>
+            ) : (
+              reviews.map((item: ReviewItem, index: number) => (
+                <div
+                  key={item._id || `course-review-${index}`}
+                  className="w-full rounded-xl border border-[#ffffff1d] bg-slate-500 bg-opacity-5 p-4 shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <Image
+                      src={getAvatarUrl(item?.user)}
+                      width={52}
+                      height={52}
+                      alt={item?.user?.name || "Review author"}
+                      className="w-[52px] h-[52px] rounded-full object-cover border border-purple-400/30"
+                      unoptimized
+                    />
+                    <div className="flex-1">
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <h2 className="text-[18px] font-medium text-black dark:text-white">
+                          {item?.user?.name || "Anonymous"}
+                        </h2>
+                        <small className="text-[#0000009e] dark:text-[#ffffff83]">
+                          {formatDate(item?.createdAt)}
+                        </small>
+                      </div>
+                      <Ratings rating={Number(item?.rating || 0)} />
+                      <p className="mt-2 text-[15px] leading-relaxed text-black dark:text-white">
+                        {item?.comment}
+                      </p>
+
+                      {Array.isArray(item?.commentReplies) && item.commentReplies.length > 0 && (
+                        <div className="mt-4 border-l-2 border-purple-400/30 pl-4 space-y-4">
+                          {item.commentReplies.map((reply, replyIndex) => (
+                            <div
+                              key={reply?._id || reply?.createdAt || `course-review-reply-${index}-${replyIndex}`}
+                              className="flex items-start gap-3"
+                            >
+                              <Image
+                                src={getAvatarUrl(reply?.user)}
+                                width={42}
+                                height={42}
+                                alt={reply?.user?.name || "Reply author"}
+                                className="w-[42px] h-[42px] rounded-full object-cover border border-purple-400/20"
+                                unoptimized
+                              />
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between gap-3">
+                                  <h3 className="text-[15px] font-medium text-black dark:text-white">
+                                    {reply?.user?.name || "Admin"}
+                                  </h3>
+                                  <small className="text-[#0000009e] dark:text-[#ffffff83]">
+                                    {formatDate(reply?.createdAt)}
+                                  </small>
+                                </div>
+                                <p className="mt-1 text-[14px] leading-relaxed text-black dark:text-white">
+                                  {reply?.comment}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
 
       {/* FIXED MODAL: Uses openPayment instead of open */}

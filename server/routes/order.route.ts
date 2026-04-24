@@ -11,5 +11,5 @@ orderRouter.get("/get-orders", updateAccessToken,  isAuthenticated, authorizeRol
 
 orderRouter.get("/payment/stripepublishablekey", sendStripePublishableKey);
 
-orderRouter.post("/payment", isAuthenticated, newPayment)
- export default orderRouter;               
+orderRouter.post("/payment", updateAccessToken, isAuthenticated, newPayment)
+ export default orderRouter;

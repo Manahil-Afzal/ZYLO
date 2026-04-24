@@ -29,18 +29,12 @@ app.use(cookieParser());
 
 // cors => cross origin resource sharing
 const allowedOrigins = process.env.CLIENT_URL
-    ? [process.env.CLIENT_URL]
-    : ["https://zylo-app-plum.vercel.app"];
+  ? [process.env.CLIENT_URL]
+  : ["https://zylo-app-plum.vercel.app"];
 
 app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
+  origin: true,
+  credentials: true,
 }));
 
 // api request limit
