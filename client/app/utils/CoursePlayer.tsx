@@ -86,12 +86,12 @@ useEffect(() => {
         setLoading(true);
         setError(false);
     axios
-    .post("http://localhost:8000/api/v1/getVdoCipherOTP",{
+    .post(`${(process.env.NEXT_PUBLIC_SERVER_URI || "https://zylo-learning.vercel.app/api/v1/").replace(/\/$/, "")}/getVdoCipherOTP`,{
         videoId: source,
     }).then((res) => {
         setVideoData(res.data);
         setLoading(false);
-        }).catch(() => {
+    }).catch(() => {
             setVideoData({ otp: "", playbackInfo: "" });
             setLoading(false);
             setError(true);

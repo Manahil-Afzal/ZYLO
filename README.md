@@ -1,4 +1,4 @@
-# Zylo
+# Zone Your Learning Operations (zylo)
 
 Zylo is a Learning Management System (LMS) that connects students with teachers through structured courses. Students can browse, purchase, and access video-based courses with interactive Q&A, reviews, and real-time notifications. Admins manage content, users, and analytics through a dedicated dashboard.
 
