@@ -27,4 +27,6 @@ initSocketServer(server);
 
 // create server
 connectDB();
+
+export default app;
                  

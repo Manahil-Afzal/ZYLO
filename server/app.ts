@@ -81,4 +81,3 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 // middleware calls
 app.use(ErrorMiddleware);
 
-export default app;
