@@ -33,7 +33,7 @@ const allowedOrigins = process.env.CLIENT_URL
   : ["https://zylo-app-plum.vercel.app"];
 
 app.use(cors({
-  origin: true,
+   origin: process.env.CLIENT_URL || "https://zylo-app-plum.vercel.app",
   credentials: true,
 }));
 

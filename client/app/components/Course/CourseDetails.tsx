@@ -80,7 +80,7 @@ const CourseDetails = (props: Props) => {
 
   const handleOrder = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setOpenPayment(true); // Now triggers the local payment modal
+    setOpenPayment(true); 
   };
 
   const reviews = (data?.reviews ?? data?.review ?? []) as ReviewItem[];
