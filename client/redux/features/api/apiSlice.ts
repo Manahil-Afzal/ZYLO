@@ -5,18 +5,22 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      process.env.NEXT_PUBLIC_SERVER_URI || "http://localhost:8000/api/v1",
+      process.env.NEXT_PUBLIC_SERVER_URI || "https://zylo-learning.vercel.app/api/v1",
   }),
+
   endpoints: (builder) => ({
+
+    // ================= AUTH =================
     refreshToken: builder.query({
-      query: (data) => ({
+      query: () => ({
         url: "user/refresh",
         method: "GET",
         credentials: "include" as const,
       }),
     }),
+
     loadUser: builder.query({
-      query: (data) => ({
+      query: () => ({
         url: "user/me",
         method: "GET",
         credentials: "include" as const,
@@ -35,7 +39,21 @@ export const apiSlice = createApi({
         }
       },
     }),
+
+    // ================= LAYOUT (THIS WAS MISSING) =================
+    getLayoutByType: builder.query({
+      query: (type: string) => ({
+        url: `layout/get-layout/${type}`,
+        method: "GET",
+      }),
+    }),
+
   }),
 });
 
-export const { useRefreshTokenQuery, useLoadUserQuery } = apiSlice;
+// ================= EXPORT HOOKS =================
+export const {
+  useRefreshTokenQuery,
+  useLoadUserQuery,
+  useGetLayoutByTypeQuery,
+} = apiSlice;
