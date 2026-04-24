@@ -20,19 +20,23 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
   });
   const [updateNotificationStatus, { isSuccess }] = useUpdateNotificationStatusMutation();
   const [notifications, setNotifications] = useState<any>([]);
-  const [audio] = useState(new Audio(""));
-
-  const playerNotificationSound = () => {
-    audio.src = "/assets/notification-sound.mp3";
-    audio.play()
-      .then(() => console.log("Audio playback started successfully."))
-      .catch((error) => console.error("Audio playback failed:", error));
-  };
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    audio.src = "/assets/notification-sound.mp3";
-    audio.load();
-  }, [audio]);
+    if (typeof Audio !== "undefined") {
+      const newAudio = new Audio("/assets/notification-sound.mp3");
+      newAudio.load();
+      setAudio(newAudio);
+    }
+  }, []);
+
+  const playerNotificationSound = () => {
+    if (audio) {
+      audio.play()
+        .then(() => console.log("Audio playback started successfully."))
+        .catch((error) => console.error("Audio playback failed:", error));
+    }
+  };
 
   useEffect(() => {
     if (data) {

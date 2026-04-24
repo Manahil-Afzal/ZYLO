@@ -130,4 +130,12 @@ const CoursesPage = () => {
   );
 };
 
-export default CoursesPage;
+const Page = () => {
+  return (
+    <React.Suspense fallback={<Loader />}>
+      <CoursesPage />
+    </React.Suspense>
+  );
+};
+
+export default Page;

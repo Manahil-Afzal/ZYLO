@@ -163,7 +163,7 @@ body {
 }
 
 /* Track */
-::webkit-scrollbar-track{
+::-webkit-scrollbar-track{
   background: #7542ed;
 }
 
