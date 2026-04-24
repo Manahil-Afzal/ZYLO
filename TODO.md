@@ -16,4 +16,5 @@
 - [x] Environment Variables
 - [x] Deployment Notes
 - [x] Verify markdown formatting
+- [x] Commit and push
 
