@@ -33,10 +33,16 @@ app.use(cookieParser());
 // cors => cross origin resource sharing
 const allowedOrigins = process.env.CLIENT_URL
     ? [process.env.CLIENT_URL]
-    : ["http://localhost:3000"];
+    : ["https://zylo-app-plum.vercel.app"];
 
 app.use(cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
 
