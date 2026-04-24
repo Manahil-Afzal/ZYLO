@@ -5,7 +5,8 @@ dotenv.config();
 
 const dbUrl: string = process.env.MONGO_URI || "";
 
-if(dbUrl){
+
+if(!dbUrl){
    throw new Error("db url not found");
 }
 
