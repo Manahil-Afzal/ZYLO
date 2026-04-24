@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const dbUrl: string = process.env.MONGO_URI || "";
 
+if(dbUrl){
+   throw new Error("db url not found");
+}
+
 const connectDB = async () => {
      try {
         await mongoose.connect(dbUrl).then((data:any) => {
