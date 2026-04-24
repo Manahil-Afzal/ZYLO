@@ -9,7 +9,10 @@ import sendMail from "../utils/sendMail.js";
 import NotificationModel from "../models/notificationModel.js";
 import { getAllOrdersService } from "../services/order.service.js";
 import { redis } from "../utils/redis.js";
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+import Stripe from "stripe";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+    apiVersion: "2025-02-24.acacia",
+});
 
 
 // create order
@@ -21,7 +24,7 @@ export const createOrder = CatchAsyncError(
 
         if(payment_info){
             if("id" in payment_info){
-                const paymentIntentId = payment_info.id;
+                const paymentIntentId = payment_info.id as string;
                 const paymentIntent = await stripe.paymentIntents.retrieve(
                     paymentIntentId
                 );
@@ -30,7 +33,7 @@ export const createOrder = CatchAsyncError(
                     return next (new ErrorHandler("Payment not authorized!", 400));
                 }
 
-                resolvedPaymentInfo = paymentIntent;
+                resolvedPaymentInfo = paymentIntent as unknown as Record<string, unknown>;
             }
         }
 
