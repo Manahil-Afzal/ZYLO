@@ -12,10 +12,7 @@ const __dirname = path.dirname(__filename);
 
 const server = http.createServer(app);
 
-dotenv.config({
-    path: path.resolve(__dirname, "../.env"),
-    override: true,
-});
+dotenv.config();
 
 const PORT = process.env.PORT || 8000;
 
