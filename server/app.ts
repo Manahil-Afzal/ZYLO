@@ -12,16 +12,13 @@ import orderRouter from "./routes/order.route.js";
 import notificationRouter from "./routes/notification.route.js";
 import analyticsRouter from "./routes/analytics.route.js";
 import layoutRouter from "./routes/layout.route.js";
+import connectDB from "./utils/db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({
-    path: path.resolve(__dirname, "../.env"),
-    override: true,
-});
-
 export const app = express();
+app.set("trust proxy", 1);
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -49,12 +46,13 @@ app.use(cors({
 // api request limit
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: 200,
     standardHeaders: "draft-7",
     legacyHeaders: false,
 });
 
 app.use(limiter);
+
 
 // routes
 app.use("/api/v1/user", userRouter);

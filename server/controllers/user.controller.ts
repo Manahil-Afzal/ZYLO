@@ -13,6 +13,7 @@ import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt
 import { redis } from "../utils/redis.js";
 import { getAllUsersService, getUserById, updateUserRoleService } from "../services/user.service.js";
 import cloudinary from "cloudinary";
+import connectDB from "../utils/db.js"; 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -269,21 +270,26 @@ interface ISocialAuthBody{
 
 // social auth
 export const socialAuth = CatchAsyncError(
-    async(req:Request, res:Response, next:NextFunction)=>{
-    try {
-        const {email, name, avatar} = req.body as ISocialAuthBody;
-        const user = await userModel.findOne({email});
-        if(!user){
-            const newUser= await userModel.create({email, name, avatar: { public_id: '', url: avatar }});
-            sendToken(newUser,200,res);
-        }
-        else{
-            sendToken(user, 200, res);
-        }
-    } catch (error:any) {
-        return next(new ErrorHandler(error.message, 400));
+  async (req: Request, res: Response, next: NextFunction) => {
+
+    await connectDB(); 
+
+    const { email, name, avatar } = req.body as ISocialAuthBody;
+
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      const newUser = await userModel.create({
+        email,
+        name,
+        avatar: { public_id: "", url: avatar },
+      });
+      sendToken(newUser, 200, res);
+    } else {
+      sendToken(user, 200, res);
     }
-});
+  }
+);
 
 // Update user Info
 interface IUpdateUserInfo{
