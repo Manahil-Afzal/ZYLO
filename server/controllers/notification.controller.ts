@@ -1,7 +1,7 @@
-import NotificationModel from "../models/notificationModel";
-import { NextFunction, Request, Response} from "express";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
-import ErrorHandler from "../utils/ErrorHandler";
+import NotificationModel from "../models/notificationModel.js";
+import { NextFunction, Request, Response } from "express";
+import { CatchAsyncError } from "../middleware/catchAsyncErrors.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
 import cron from "node-cron";
 
 
@@ -47,10 +47,11 @@ export const updateNotification = CatchAsyncError(async(req:Request, res:Respons
     }
 });
 
-// delete notification
-cron.schedule("*0 0 0 * * *", async() => {
-    const thirtyDaysAgo = new Date (Date.now() - 30 *24 *60 *60 *1000);
-    await NotificationModel.deleteMany({status: "read", createdAt: {$lt: thirtyDaysAgo}});
-    console.log('Deleted read notifications');
-});
-                                                              
+// delete notification — skip on serverless/Vercel
+if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'vercel') {
+    cron.schedule("0 0 0 * * *", async() => {
+        const thirtyDaysAgo = new Date (Date.now() - 30 *24 *60 *60 *1000);
+        await NotificationModel.deleteMany({status: "read", createdAt: {$lt: thirtyDaysAgo}});
+        console.log('Deleted read notifications');
+    });
+}

@@ -1,6 +1,5 @@
-import mongoose, {Document, Model, Schema} from "mongoose";
-import { title } from "node:process";
-import { IUser } from "./user.model";
+import mongoose, { Document, Model, Schema } from "mongoose";
+import { IUser } from "./user.model.js";
 
 
 export interface IComment extends Document{

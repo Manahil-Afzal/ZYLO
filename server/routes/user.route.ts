@@ -1,6 +1,6 @@
-import express from 'express';
-import { activateUser, registrationUser, loginUser, logoutUser, updateAccessToken, getUserInfo, socialAuth, updateUserInfo, updatePassword, updateProfilePicture, getAllUsers, updateUserRole, addTeamMember, deleteUser  } from '../controllers/user.controller';
-import { authorizeRoles, isAuthenticated } from '../middleware/auth';
+import express from "express";
+import { activateUser, registrationUser, loginUser, logoutUser, updateAccessToken, getUserInfo, socialAuth, updateUserInfo, updatePassword, updateProfilePicture, getAllUsers, updateUserRole, addTeamMember, deleteUser } from "../controllers/user.controller.js";
+import { authorizeRoles, isAuthenticated } from "../middleware/auth.js";
 const userRouter = express.Router();
 
 userRouter.post('/registration', registrationUser);

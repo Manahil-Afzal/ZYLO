@@ -1,13 +1,6 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import path from 'path';
+import mongoose from "mongoose";
 
-dotenv.config({
-    path: path.resolve(__dirname, '../.env'),
-    override: true,
-});
-
-const dbUrl:string = process.env.MONGO_URI || '';
+const dbUrl: string = process.env.MONGO_URI || "";
 
 const connectDB = async () => {
     if (!dbUrl) {
@@ -19,6 +12,6 @@ const connectDB = async () => {
     });
 
     console.log(`Database connected with ${connection.connection.host}`);
-}
+};
 
 export default connectDB;

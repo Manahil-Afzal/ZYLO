@@ -1,19 +1,21 @@
-import { Request,Response,NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import type { JwtPayload, SignOptions } from "jsonwebtoken";
-import userModel from "../models/user.model";
-import { IUser } from "../models/user.model";
-import ErrorHandler from "../utils/ErrorHandler";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
+import userModel from "../models/user.model.js";
+import { IUser } from "../models/user.model.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
+import { CatchAsyncError } from "../middleware/catchAsyncErrors.js";
 import ejs from "ejs";
 import path from "path";
-import sendMail from "../utils/sendMail";
-import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt";
-import { redis } from "../utils/redis";
-import { access } from "fs";
-import { getAllUsersService, getUserById, updateUserRoleService } from "../services/user.service";
+import { fileURLToPath } from "url";
+import sendMail from "../utils/sendMail.js";
+import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt.js";
+import { redis } from "../utils/redis.js";
+import { getAllUsersService, getUserById, updateUserRoleService } from "../services/user.service.js";
 import cloudinary from "cloudinary";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //register user
 interface IRegistrationBody{
@@ -507,5 +509,3 @@ export const deleteUser= CatchAsyncError(async(req:Request, res:Response, next:N
         return next(new ErrorHandler(error.message, 400));
     }
 });
-
-

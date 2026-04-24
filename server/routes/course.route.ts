@@ -1,7 +1,7 @@
-import express  from "express";
-import { addAnswer, addQuestion, addReplyToReview, addReview, deleteCourse, editCourse, generateVideoUrl, getAdminAllCourses, getAllCourses, getCourseByUser, getSingleCourse, uploadCourse } from "../controllers/course.controller";
-import { authorizeRoles, isAuthenticated } from "../middleware/auth";
-import { updateAccessToken } from "../controllers/user.controller";
+import express from "express";
+import { addAnswer, addQuestion, addReplyToReview, addReview, deleteCourse, editCourse, generateVideoUrl, getAdminAllCourses, getAllCourses, getCourseByUser, getSingleCourse, uploadCourse } from "../controllers/course.controller.js";
+import { authorizeRoles, isAuthenticated } from "../middleware/auth.js";
+import { updateAccessToken } from "../controllers/user.controller.js";
 
 const courseRouter = express.Router();
 

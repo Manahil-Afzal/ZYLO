@@ -1,22 +1,24 @@
-import { Response } from "express";
-import CourseModel from "../models/course.model";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
+import { NextFunction, Response } from "express";
+import { CatchAsyncError } from "../middleware/catchAsyncErrors.js";
+import OrderModel from "../models/orderModel.js";
 
-// create course
-export const createCourse = CatchAsyncError(async(data:any, res:Response)=>{
-    const course = await CourseModel.create(data);
-    res.status(201).json({
-        success: true,
-        course,
-    })
+// create new order
+export const newOrder = CatchAsyncError(async(data:any, res:Response, next:NextFunction)=>{
+    const order = await OrderModel.create(data);
+
+     res.status(201).json({
+            success: true,
+            order,
+        });
+
 });
 
-// Get All users
-export const getAllCoursesService = async(res:Response) =>{
-    const courses = await CourseModel.find().sort({createdAt: -1});
+// Get All orders
+export const getAllOrdersService = async(res:Response) =>{
+    const orders = await OrderModel.find().sort({createdAt: -1});
 
     res.status(201).json({
         success: true,
-        courses,
+        orders,
     });
 };

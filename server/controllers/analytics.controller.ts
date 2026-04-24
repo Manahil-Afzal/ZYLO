@@ -1,10 +1,10 @@
-import {Request, Response, NextFunction}from "express";
-import ErrorHandler from "../utils/ErrorHandler";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
-import { generateLast12MonthsData } from "../utils/analytics.generator";
-import userModel from "../models/user.model";
-import CourseModel from "../models/course.model";
-import OrderModel from "../models/orderModel";
+import { Request, Response, NextFunction } from "express";
+import ErrorHandler from "../utils/ErrorHandler.js";
+import { CatchAsyncError } from "../middleware/catchAsyncErrors.js";
+import { generateLast12MonthsData } from "../utils/analytics.generator.js";
+import userModel from "../models/user.model.js";
+import CourseModel from "../models/course.model.js";
+import OrderModel from "../models/orderModel.js";
 
 // get user analytics ---only for admin
 export const getUsersAnalytics = CatchAsyncError(async(req: Request, res: Response, next: NextFunction) =>{
@@ -52,4 +52,3 @@ export const getOrdersAnalytics = CatchAsyncError(
         return next(new ErrorHandler(error.message, 500));
     }
 });
-

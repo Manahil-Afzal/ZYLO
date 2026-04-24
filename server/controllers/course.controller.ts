@@ -1,46 +1,22 @@
 import { NextFunction, Response, Request } from "express";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
-import ErrorHandler from "../utils/ErrorHandler";
+import { CatchAsyncError } from "../middleware/catchAsyncErrors.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
 import cloudinary from "cloudinary";
-import { createCourse, getAllCoursesService } from "../services/course.service";
-import CourseModel from "../models/course.model";
-import { redis } from "../utils/redis";
+import { createCourse, getAllCoursesService } from "../services/course.service.js";
+import CourseModel from "../models/course.model.js";
+import { redis } from "../utils/redis.js";
 import mongoose from "mongoose";
-import userModel from "../models/user.model";
-import sendMail from "../utils/sendMail";
-import path from "node:path";
+import userModel from "../models/user.model.js";
+import sendMail from "../utils/sendMail.js";
+import path from "path";
 import ejs from "ejs";
-import NotificationModel from "../models/notificationModel";
+import NotificationModel from "../models/notificationModel.js";
 import axios from "axios";
 import { Types } from "mongoose";
 
 const getStringId = (id: string | string[]): string => {
   return Array.isArray(id) ? id[0] : id;
 };
-// import { getAllUsersService } from "../services/user.service";
-
-
-// upload course 
-// export const uploadCourse = CatchAsyncError(async(req:Request, res:Response, next:NextFunction)=>{
-//     try {
-//         const data = req.body;
-//         const thumbnail = data.thumbnail;
-//         if(thumbnail){
-//             const myCloud = await cloudinary.v2.uploader.upload(thumbnail,{
-//                 folder: "courses"
-//             });
-//             data.thumbnail ={
-//                 public_id: myCloud.public_id,
-//                 url:myCloud.Secure_url
-//             }
-//         }
-//         createCourse(data,res, next);
-//     } catch (error:any) {
-//         return next(new ErrorHandler(error.message, 500));
-//     }
-// })
-
-
 
 //upload course
 
@@ -87,40 +63,6 @@ export const uploadCourse = CatchAsyncError(async(req:Request, res:Response, nex
 
 
 // edit course
-// export const editCourse = CatchAsyncError(async(req:Request, res:Response, next:NextFunction)=>{
-//     try {
-//         const data = req.body;
-//         const thumbnail = data.thumbnail;
-
-//         if(thumbnail){
-//             await cloudinary.v2.uploader.destroy(thumbnail.public_id);
-
-//             const myCloud = await cloudinary.v2.uploader.upload(thumbnail,{
-//                 folder: "courses"
-//             });
-//             data.thumbnail ={
-//                 public_id: myCloud.public_id,
-//                 url: myCloud.secure_url
-//             }
-//         }
-
-//         const courseId = req.params.id;
-
-//         const course = await CourseModel.findByIdAndUpdate(courseId,{
-//             $set: data},
-//             {new: true
-//         } );
-
-//         res.status(201).json({
-//             success : true,
-//             course,
-//         })
-//     } catch (error:any) {
-//         return next(new ErrorHandler(error.message, 500));
-//     }
-// })
-
-
 export const editCourse = CatchAsyncError(async(req:Request, res:Response, next:NextFunction)=>{
     try {
         const data = req.body;
@@ -450,10 +392,6 @@ export const addReview = CatchAsyncError(async(req:Request, res:Response, next: 
         await course.save();
         await redis.del(courseId.toString());
 
-        // const notification = {
-        //     title: "New Review Received",
-        //     message: `${req.user?.name} has given a review in ${course?.name}`,
-        // }
         await NotificationModel.create({
     user: new Types.ObjectId(req.user!._id!.toString()),
     title: "New Review Received",
@@ -557,7 +495,6 @@ export const generateVideoUrl = CatchAsyncError(async(req:Request, res:Response,
     try {
         const {videoId} = req.body;
         const response = await axios.post(
-            // `https://www.vdocipher.com/dashboard/config/apikeys`,
             `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
             {ttl: 300},
             {

@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
-import ErrorHandler from "../utils/ErrorHandler";
-import { IOrder } from "../models/orderModel";
-import OrderModel from "../models/orderModel";
-import userModel from "../models/user.model";
-import CourseModel from "../models/course.model";
-import sendMail from "../utils/sendMail";
-import NotificationModel from "../models/notificationModel";
-import { getAllOrdersService } from "../services/order.service";
-import { redis } from "../utils/redis";
+import { CatchAsyncError } from "../middleware/catchAsyncErrors.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
+import { IOrder } from "../models/orderModel.js";
+import OrderModel from "../models/orderModel.js";
+import userModel from "../models/user.model.js";
+import CourseModel from "../models/course.model.js";
+import sendMail from "../utils/sendMail.js";
+import NotificationModel from "../models/notificationModel.js";
+import { getAllOrdersService } from "../services/order.service.js";
+import { redis } from "../utils/redis.js";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 
@@ -55,7 +55,6 @@ export const createOrder = CatchAsyncError(
 
         const mailData = {
             order: {
-                // _id: course._id.slice(0,6),
                 _id: course._id.toString().slice(0, 6),
                 name: course.name,
                 price: course.price,

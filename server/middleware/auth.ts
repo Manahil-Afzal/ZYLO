@@ -1,8 +1,8 @@
-import {Request, Response, NextFunction} from "express";
-import { CatchAsyncError } from "./catchAsyncErrors";
-import ErrorHandler from "../utils/ErrorHandler";
+import { Request, Response, NextFunction } from "express";
+import { CatchAsyncError } from "./catchAsyncErrors.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { redis } from "../utils/redis";
+import { redis } from "../utils/redis.js";
 
 
 // Authenticated user

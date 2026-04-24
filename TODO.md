@@ -1,0 +1,29 @@
+# Server Fix TODO
+
+- [x] Create plan and get user approval
+- [x] Fix `server/package.json` — invalid versions, ESM type, build paths
+- [x] Fix `server/tsconfig.json` — module/target, include/exclude
+- [x] Fix `server/api/index.ts` — Vercel serverless handler export
+- [x] Fix `server/app.ts` — remove debug logs, fix imports, rate limiter order, dotenv
+- [x] Fix `server/server.ts` — use `process.env.PORT`
+- [x] Fix `server/utils/redis.ts` — remove require(dotenv)
+- [x] Fix `server/utils/db.ts` — remove hardcoded __dirname dotenv
+- [x] Fix `server/utils/jwt.ts` — remove require(dotenv)
+- [x] Fix `server/utils/sendMail.ts` — remove require(dotenv), fix __dirname
+- [x] Fix `server/models/user.model.ts` — remove require(dotenv)
+- [x] Fix `server/models/course.model.ts` — remove unused import
+- [x] Fix `server/controllers/user.controller.ts` — fix imports, fix __dirname
+- [x] Fix `server/controllers/course.controller.ts` — fix imports, fix __dirname
+- [x] Fix `server/controllers/order.controller.ts` — fix imports
+- [x] Fix `server/controllers/analytics.controller.ts` — fix imports
+- [x] Fix `server/controllers/layout.controller.ts` — fix imports
+- [x] Fix `server/controllers/notification.controller.ts` — fix imports, wrap cron
+- [x] Fix `server/services/user.service.ts` — fix imports
+- [x] Fix `server/services/course.service.ts` — fix imports
+- [x] Fix `server/services/order.service.ts` — fix imports
+- [x] Fix all route files — fix imports
+- [x] Fix middleware files — fix imports
+- [x] Verify `server/vercel.json`
+- [x] Run `npm install` — SUCCESS
+- [x] Run `npm run build` — SUCCESS (zero errors)
+- [ ] Commit and push

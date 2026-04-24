@@ -1,7 +1,7 @@
-import express  from "express";
-import { authorizeRoles, isAuthenticated } from "../middleware/auth";
-import { createOrder, getAllOrders, newPayment, sendStripePublishableKey } from "../controllers/order.controller";
-import { updateAccessToken } from "../controllers/user.controller";
+import express from "express";
+import { authorizeRoles, isAuthenticated } from "../middleware/auth.js";
+import { createOrder, getAllOrders, newPayment, sendStripePublishableKey } from "../controllers/order.controller.js";
+import { updateAccessToken } from "../controllers/user.controller.js";
 const orderRouter = express.Router();
 
 
