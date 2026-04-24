@@ -61,7 +61,7 @@ const FAQ = () => {
                     {question}
                   </span>
                   <span className={`shrink-0 cursor-pointer transition-transform ${isOpen ? 'rotate-180' : ''}`}>
-                    {isOpen ? <HiMinus size={18} className="sm:size-20" /> : <HiPlus size={18} className="sm:size-20" />}
+                    {isOpen ? <HiMinus size={18} className="sm:size-5" /> : <HiPlus size={18} className="sm:size-5" />}
                   </span>
                 </button>
 
