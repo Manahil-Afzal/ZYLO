@@ -10,14 +10,13 @@ import CustomModal from "../utils/CustomModal";
 import Login from "../components/Auth/Login";
 import SignUp from "../components/Auth/SignUp";
 import Verification from "../components/Auth/verification";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from "../../public/assests/avatar.png";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
-import {toast} from "react-hot-toast";
-
+import { toast } from "react-hot-toast";
 
 type Props = {
   open?: boolean;
@@ -27,172 +26,167 @@ type Props = {
   setRoute: (route: string) => void;
 };
 
-const Header: FC<Props> = ({ activeItem, route, setOpen, open, setRoute }) => {
+const Header: FC<Props> = ({
+  activeItem,
+  route,
+  setOpen,
+  open,
+  setRoute,
+}) => {
   const [openSidebar, setOpenSidebar] = useState(false);
   const [active, setActive] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const {user} = useSelector((state:any) => state.auth);
+
+  const { user } = useSelector((state: any) => state.auth);
   const pathname = usePathname();
-  const {data} = useSession();
-  const [socialAuth, {isSuccess, error}] = useSocialAuthMutation();
+  const { data } = useSession();
+
+  const [socialAuth, { isSuccess }] = useSocialAuthMutation();
   const [logout, setLogout] = useState(false);
-  // const {} = useLogOutQuery(undefined,{
-  //   skip: !logout ? true : false,
-  // });
-               
-useEffect(() => {
-  if(!user) {
-    if(data){
+
+  // Social auth (Google login)
+  useEffect(() => {
+    if (!user && data) {
       socialAuth({
         email: data?.user?.email,
         name: data?.user?.name,
-        avatar: data.user?.image,
+        avatar: data?.user?.image,
       });
     }
-  }
-    if(data === null ){
-      if(isSuccess){
-        toast.success("Login Successfully");
-      }
-    }
-    if(data === null){
-        setLogout(true);                                
-    }
-}, [data, user]);
 
+    if (data === null && isSuccess) {
+      toast.success("Login Successfully");
+    }
 
+    if (data === null) {
+      setLogout(true);
+    }
+  }, [data, user]);
+
+  // mount check
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // scroll header effect
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 80) {
-        setActive(true);
-      } else {
-        setActive(false);
-      }
+      setActive(window.scrollY > 80);
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // CRITICAL: Early return MUST be after all Hooks (useEffect/useState)
   if (!mounted) return null;
 
   return (
     <div className="w-full relative">
+      {/* HEADER */}
       <div
         className={`${
           active
-            ? "dark:bg-linear-to-r dark:bg-gray-800 dark:via-purple-950 dark:to-purple-700 bg-white fixed top-0 left-0 w-full h-20 z-80 border-b dark:border-purple-900 border-gray-200 shadow-xl transition duration-500"
-            : "w-full dark:bg-linear-to-r dark:bg-gray-800 dark:via-purple-950 dark:to-purple-700 bg-white border-b dark:border-purple-900 border-gray-200 h-20 z-80 shadow"
+            ? "bg-white dark:bg-gray-800 fixed top-0 left-0 w-full h-20 z-50 border-b dark:border-purple-900 shadow-lg"
+            : "w-full bg-white dark:bg-gray-800 h-20 border-b dark:border-purple-900"
         }`}
       >
-        <div className="w-[95%] m-auto py-2 h-full">
-          <div className="w-full h-20 flex items-center justify-between p-3">
-            <div>
-              <Link
-                href={"/"}
-                className="text-[25px] font-Poppins font-medium text-black dark:text-white"
-              >
-                ZyLO Learning
-              </Link>
+        <div className="w-[95%] m-auto h-full flex items-center justify-between">
+          
+          {/* LOGO */}
+          <Link
+            href="/"
+            className="text-[22px] font-Poppins font-medium dark:text-white"
+          >
+            ZyLO Learning
+          </Link>
+
+          {/* NAV ITEMS */}
+          <div className="hidden md:flex">
+            <NavItems activeItem={activeItem} isMobile={false} />
+          </div>
+
+          <div className="flex items-center gap-4">
+
+            {/* THEME */}
+            <ThemeSwitcher />
+
+            {/* MOBILE MENU */}
+            <div className="md:hidden">
+              <HiOutlineMenuAlt3
+                size={26}
+                className="cursor-pointer dark:text-white"
+                onClick={() => setOpenSidebar(true)}
+              />
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex">
-                <NavItems activeItem={activeItem} isMobile={false} />
-              </div>
-
-              <ThemeSwitcher />
-
-              {/* Mobile Sidebar Trigger */}
-              <div className="md:hidden">
-                <HiOutlineMenuAlt3
-                  size={25}
-                  className="cursor-pointer dark:text-white text-black"
-                  onClick={() => setOpenSidebar(true)}
+            {/* USER / LOGIN */}
+            {user ? (
+              <Link href="/profile">
+                <Image
+                  src={user.avatar ? user.avatar.url : avatar}
+                  alt="user"
+                  width={30}
+                  height={30}
+                  className="w-[30px] h-[30px] rounded-full object-cover cursor-pointer"
+                  style={{
+                    border:
+                      pathname === "/profile"
+                        ? "2px solid #8B5CF6"
+                        : "none",
+                  }}
                 />
-              </div>
-
-              {/* Login Modal Trigger */}
-             {
-              user ? (
-                  <Link href={"/profile"}>
-                 <Image
-                 src={user.avatar ? user.avatar.url : avatar}
-                 alt="User avatar"
-                 width={30}
-                 height={30}
-                 className="w-[30px] h-[30px] rounded-full cursor-pointer object-cover"  
-                 style={{ border: pathname === "/profile" ? "2px solid #8B5CF6" : "none" }}
-                 />
-                   </Link>
-              ) : (
-                 <HiOutlineUserCircle
-                size={25}
-                className="hidden md:block cursor-pointer dark:text-white text-black"
+              </Link>
+            ) : (
+              <HiOutlineUserCircle
+                size={26}
+                className="cursor-pointer dark:text-white"
                 onClick={() => {
-                  if (setOpen) setOpen(true);
+                  setOpen?.(true);
                   setRoute("Login");
                 }}
               />
-              )
-             }
-            </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Login Modal Logic */}
-      {route === "Login" && (
-        <>
-          {open && (
-            <CustomModal
-              open={open}
-              setOpen={setOpen!}
-              setRoute={setRoute}
-              activeItem={activeItem}
-              component={Login}
-            />
-          )}
-        </>
-      )}
-       {route === "Sign-Up" && (
-        <>
-          {open && (
-            <CustomModal
-              open={open}
-              setOpen={setOpen!}
-              setRoute={setRoute}
-              activeItem={activeItem}
-              component={SignUp}
-            />
-          )}
-        </>
+      {/* MODALS */}
+      {route === "Login" && open && (
+        <CustomModal
+          open={open}
+          setOpen={setOpen!}
+          setRoute={setRoute}
+          activeItem={activeItem}
+          component={Login}
+        />
       )}
 
-      
-       {route === "verification" && (
-        <>
-          {open && (
-            <CustomModal
-              open={open}
-              setOpen={setOpen!}
-              setRoute={setRoute}
-              activeItem={activeItem}
-              component={Verification}
-            />
-          )}
-        </>
+      {route === "Sign-Up" && open && (
+        <CustomModal
+          open={open}
+          setOpen={setOpen!}
+          setRoute={setRoute}
+          activeItem={activeItem}
+          component={SignUp}
+        />
       )}
 
-      {/* Mobile Sidebar */}
+      {route === "verification" && open && (
+        <CustomModal
+          open={open}
+          setOpen={setOpen!}
+          setRoute={setRoute}
+          activeItem={activeItem}
+          component={Verification}
+        />
+      )}
+
+      {/* MOBILE SIDEBAR */}
       <MobileSidebar
         activeItem={activeItem}
         open={openSidebar}
         setOpen={setOpenSidebar}
+        user={user}
       />
     </div>
   );

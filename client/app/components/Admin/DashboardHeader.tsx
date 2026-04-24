@@ -82,7 +82,7 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
 
       {open && (
         /* ADJUSTED: width is 90vw on mobile, 350px on desktop. Right positioning fixed. */
-        <div className="w-[20vw] 800px:w-[350px] h-[50vh] 800px:h-[60vh] overflow-y-auto py-3 px-2 border border-[#ffffff0c] dark:bg-[#111C43] bg-white shadow-2xl absolute top-16 right-2 800px:right-0 z-[10000000] rounded-lg">
+        <div className="w-[200px] 800px:w-[350px] h-[50vh] 800px:h-[60vh] overflow-y-auto py-3 px-2 border border-[#ffffff0c] dark:bg-[#111C43] bg-white shadow-2xl absolute top-16 right-2 800px:right-0 z-[10000000] rounded-lg">
           <h5 className="text-center text-[18px] 800px:text-[20px] font-Poppins font-[600] text-black dark:text-white p-3">
             Notifications
           </h5>

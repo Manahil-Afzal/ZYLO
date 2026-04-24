@@ -14,24 +14,25 @@ export const navItemsData = [
 type Props = {
   isMobile: boolean;
   activeItem?: number;
+  setOpen?: (open: boolean) => void;
 };
 
-const NavItems: React.FC<Props> = ({ isMobile }) => {
+const NavItems: React.FC<Props> = ({ isMobile, setOpen }) => {
   const pathname = usePathname();
 
   return (
     <>
-      {/* Desktop Navigation */}
+      {/* Desktop */}
       {!isMobile && (
         <div className="hidden md:flex items-center gap-2">
           {navItemsData.map((item, index) => (
-            <Link href={item.url} key={index} passHref>
+            <Link href={item.url} key={index}>
               <span
                 className={`${
                   pathname === item.url
-                    ? "text-[crimson] dark:text-[#37a39a]" // Active link color
-                    : "text-black dark:text-white"         // Inactive link color
-                } text-[18px] px-6 font-Poppins font-medium cursor-pointer hover:text-[#37a39a] transition-all duration-300`}
+                    ? "text-[crimson] dark:text-[#37a39a]"
+                    : "text-black dark:text-white"
+                } text-[18px] px-6 font-Poppins font-medium cursor-pointer hover:text-[#37a39a] transition`}
               >
                 {item.name}
               </span>
@@ -40,17 +41,18 @@ const NavItems: React.FC<Props> = ({ isMobile }) => {
         </div>
       )}
 
-      {/* Mobile Navigation */}
+      {/* Mobile */}
       {isMobile && (
         <div className="w-full">
           {navItemsData.map((item, index) => (
-            <Link href={item.url} key={index} passHref>
+            <Link href={item.url} key={index}>
               <span
+                onClick={() => setOpen && setOpen(false)} 
                 className={`${
                   pathname === item.url
-                    ? "text-[crimson] dark:text-[#37a39a]"
+                    ? "text-[crimson] dark:text-[#37a39a] bg-gray-100 dark:bg-gray-700"
                     : "text-black dark:text-white"
-                } block py-5 text-[18px] px-6 font-Poppins font-medium hover:text-[#37a39a] transition-all`}
+                } block py-5 px-6 text-[18px] font-Poppins font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition`}
               >
                 {item.name}
               </span>
