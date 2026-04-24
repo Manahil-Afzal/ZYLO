@@ -1,7 +1,7 @@
-'use client'
-import Link from 'next/link';
-import React from 'react';
-import { usePathname } from 'next/navigation';
+"use client";
+import Link from "next/link";
+import React from "react";
+import { usePathname } from "next/navigation";
 
 export const navItemsData = [
   { name: "Home", url: "/" },
@@ -13,7 +13,6 @@ export const navItemsData = [
 
 type Props = {
   isMobile: boolean;
-  activeItem?: number;
   setOpen?: (open: boolean) => void;
 };
 
@@ -22,7 +21,6 @@ const NavItems: React.FC<Props> = ({ isMobile, setOpen }) => {
 
   return (
     <>
-      {/* Desktop */}
       {!isMobile && (
         <div className="hidden md:flex items-center gap-2">
           {navItemsData.map((item, index) => (
@@ -41,18 +39,17 @@ const NavItems: React.FC<Props> = ({ isMobile, setOpen }) => {
         </div>
       )}
 
-      {/* Mobile */}
       {isMobile && (
         <div className="w-full">
           {navItemsData.map((item, index) => (
             <Link href={item.url} key={index}>
               <span
-                onClick={() => setOpen && setOpen(false)} 
+                onClick={() => setOpen && setOpen(false)}
                 className={`${
                   pathname === item.url
-                    ? "text-[crimson] dark:text-[#37a39a] bg-gray-100 dark:bg-gray-700"
+                    ? "text-[crimson] dark:text-[#37a39a]"
                     : "text-black dark:text-white"
-                } block py-5 px-6 text-[18px] font-Poppins font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition`}
+                } block py-5 px-6 text-[18px] font-Poppins font-medium`}
               >
                 {item.name}
               </span>

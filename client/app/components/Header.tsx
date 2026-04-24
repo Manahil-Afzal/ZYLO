@@ -44,7 +44,6 @@ const Header: FC<Props> = ({
   const [socialAuth, { isSuccess }] = useSocialAuthMutation();
   const [logout, setLogout] = useState(false);
 
-  // Social auth (Google login)
   useEffect(() => {
     if (!user && data) {
       socialAuth({
@@ -63,12 +62,10 @@ const Header: FC<Props> = ({
     }
   }, [data, user]);
 
-  // mount check
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // scroll header effect
   useEffect(() => {
     const handleScroll = () => {
       setActive(window.scrollY > 80);
@@ -82,70 +79,64 @@ const Header: FC<Props> = ({
 
   return (
     <div className="w-full relative">
-      {/* HEADER */}
       <div
         className={`${
           active
-            ? "bg-white dark:bg-gray-800 fixed top-0 left-0 w-full h-20 z-50 border-b dark:border-purple-900 shadow-lg"
-            : "w-full bg-white dark:bg-gray-800 h-20 border-b dark:border-purple-900"
+            ? "dark:bg-linear-to-r dark:bg-gray-800 dark:via-purple-950 dark:to-purple-700 bg-white fixed top-0 left-0 w-full h-20 z-80 border-b dark:border-purple-900 border-gray-200 shadow-xl transition duration-500"
+            : "w-full dark:bg-linear-to-r dark:bg-gray-800 dark:via-purple-950 dark:to-purple-700 bg-white border-b dark:border-purple-900 border-gray-200 h-20 z-80 shadow"
         }`}
       >
-        <div className="w-[95%] m-auto h-full flex items-center justify-between">
-          
-          {/* LOGO */}
-          <Link
-            href="/"
-            className="text-[22px] font-Poppins font-medium dark:text-white"
-          >
-            ZyLO Learning
-          </Link>
+        <div className="w-[95%] m-auto py-2 h-full">
+          <div className="w-full h-20 flex items-center justify-between p-3">
+            <Link
+              href="/"
+              className="text-[25px] font-Poppins font-medium text-black dark:text-white"
+            >
+              ZyLO Learning
+            </Link>
 
-          {/* NAV ITEMS */}
-          <div className="hidden md:flex">
-            <NavItems activeItem={activeItem} isMobile={false} />
-          </div>
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex">
+                <NavItems isMobile={false} />
+              </div>
 
-          <div className="flex items-center gap-4">
+              <ThemeSwitcher />
 
-            {/* THEME */}
-            <ThemeSwitcher />
+              <div className="md:hidden">
+                <HiOutlineMenuAlt3
+                  size={25}
+                  className="cursor-pointer dark:text-white text-black"
+                  onClick={() => setOpenSidebar(true)}
+                />
+              </div>
 
-            {/* MOBILE MENU */}
-            <div className="md:hidden">
-              <HiOutlineMenuAlt3
-                size={26}
-                className="cursor-pointer dark:text-white"
-                onClick={() => setOpenSidebar(true)}
-              />
-            </div>
-
-            {/* USER / LOGIN */}
-            {user ? (
-              <Link href="/profile">
-                <Image
-                  src={user.avatar ? user.avatar.url : avatar}
-                  alt="user"
-                  width={30}
-                  height={30}
-                  className="w-[30px] h-[30px] rounded-full object-cover cursor-pointer"
-                  style={{
-                    border:
-                      pathname === "/profile"
-                        ? "2px solid #8B5CF6"
-                        : "none",
+              {user ? (
+                <Link href="/profile">
+                  <Image
+                    src={user.avatar ? user.avatar.url : avatar}
+                    alt="User avatar"
+                    width={30}
+                    height={30}
+                    className="w-[30px] h-[30px] rounded-full cursor-pointer object-cover"
+                    style={{
+                      border:
+                        pathname === "/profile"
+                          ? "2px solid #8B5CF6"
+                          : "none",
+                    }}
+                  />
+                </Link>
+              ) : (
+                <HiOutlineUserCircle
+                  size={25}
+                  className="hidden md:block cursor-pointer dark:text-white text-black"
+                  onClick={() => {
+                    if (setOpen) setOpen(true);
+                    setRoute("Login");
                   }}
                 />
-              </Link>
-            ) : (
-              <HiOutlineUserCircle
-                size={26}
-                className="cursor-pointer dark:text-white"
-                onClick={() => {
-                  setOpen?.(true);
-                  setRoute("Login");
-                }}
-              />
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -187,6 +178,8 @@ const Header: FC<Props> = ({
         open={openSidebar}
         setOpen={setOpenSidebar}
         user={user}
+        setRoute={setRoute}
+        setOpenModal={setOpen}
       />
     </div>
   );
